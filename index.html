@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Eliminar Fondo de Imagen con IA</title>
+  <style>
+    body {
+      font-family: 'Poppins', sans-serif;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      background: linear-gradient(135deg, #ff9a9e, #fad0c4);
+      overflow: hidden;
+    }
+    .container {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 20px;
+      animation: fadeIn 1.5s ease-in-out;
+    }
+    h1 {
+      color: #fff;
+      text-shadow: 2px 2px 5px rgba(0, 0, 0, 0.3);
+      font-size: 2rem;
+      letter-spacing: 1px;
+    }
+    .image-container {
+      display: flex;
+      gap: 40px;
+      position: relative;
+    }
+    .image-box {
+      width: 300px;
+      height: 300px;
+      border-radius: 15px;
+      overflow: hidden;
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+      transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
+      position: relative;
+      background: rgba(255, 255, 255, 0.1);
+      border: 2px solid rgba(255, 255, 255, 0.2);
+    }
+    .image-box:hover {
+      transform: scale(1.05);
+      box-shadow: 0 12px 30px rgba(0, 0, 0, 0.3);
+    }
+    .image-box img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+    .after::before {
+      content: 'Después';
+      position: absolute;
+      top: 10px;
+      left: 10px;
+      background: rgba(0, 0, 0, 0.6);
+      color: #fff;
+      padding: 5px 10px;
+      border-radius: 5px;
+      font-size: 14px;
+    }
+    .before::before {
+      content: 'Antes';
+      position: absolute;
+      top: 10px;
+      left: 10px;
+      background: rgba(0, 0, 0, 0.6);
+      color: #fff;
+      padding: 5px 10px;
+      border-radius: 5px;
+      font-size: 14px;
+    }
+    input[type="file"] {
+      margin-top: 20px;
+      padding: 12px 25px;
+      border: none;
+      border-radius: 8px;
+      background: linear-gradient(135deg, #ff7eb3, #ff758c);
+      color: #fff;
+      font-size: 16px;
+      cursor: pointer;
+      transition: background 0.3s ease-in-out, transform 0.3s ease-in-out;
+      box-shadow: 0 6px 15px rgba(255, 126, 179, 0.4);
+    }
+    input[type="file"]:hover {
+      transform: scale(1.05);
+      box-shadow: 0 8px 20px rgba(255, 126, 179, 0.6);
+    }
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+        transform: translateY(-20px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Aeroflow ia</h1>
+    <div class="image-container">
+      <div class="image-box before">
+        <img id="originalImage" src="" alt="Imagen Original" style="display: none;">
+      </div>
+      <div class="image-box after">
+        <img id="processedImage" src="" alt="Imagen Procesada" style="display: none;">
+      </div>
+    </div>
+    <input type="file" id="imageInput" accept="image/*">
+  </div>
+
+  <script>
+    const imageInput = document.getElementById('imageInput');
+    const originalImage = document.getElementById('originalImage');
+    const processedImage = document.getElementById('processedImage');
+
+    imageInput.addEventListener('change', async (event) => {
+      const file = event.target.files[0];
+      if (!file) return;
+
+      // Mostrar la imagen original
+      const originalImageUrl = URL.createObjectURL(file);
+      originalImage.src = originalImageUrl;
+      originalImage.style.display = 'block';
+
+      // Verificar conexión a Internet antes de procesar
+      if (!navigator.onLine) {
+        alert('No hay conexión a Internet. Por favor, verifica tu conexión.');
+        return;
+      }
+
+      // Procesar la imagen para eliminar el fondo
+      try {
+        const processedImageUrl = await removeBackground(file);
+        processedImage.src = processedImageUrl;
+        processedImage.style.display = 'block';
+
+        // Descargar automáticamente la imagen procesada
+        downloadImage(processedImageUrl, 'imagen_sin_fondo.png');
+      } catch (error) {
+        alert('Error al procesar la imagen. Por favor, intenta de nuevo.');
+      }
+    });
+
+    async function removeBackground(file) {
+      const formData = new FormData();
+      formData.append('image_file', file);
+
+      // Conexión a la API de Remove.bg
+      const response = await fetch('https://api.remove.bg/v1.0/removebg', {
+        method: 'POST',
+        headers: {
+          'X-Api-Key': 'cLoFoEa3jQbvkNhNB5itfjm2', // API Key proporcionada
+        },
+        body: formData,
+      });
+
+      if (!response.ok) {
+        throw new Error('Error en la API');
+      }
+
+      const blob = await response.blob();
+      return URL.createObjectURL(blob);
+    }
+
+    function downloadImage(url, filename) {
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = filename;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+    }
+  </script>
+</body>
+</html>
