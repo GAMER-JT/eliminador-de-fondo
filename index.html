@@ -12,6 +12,9 @@
   <link rel="manifest" href="manifest.json">
 </head>
 <body>
+  <div class="loading-screen">
+    <div class="loading-logo">Aeroflow.ia</div>
+  </div>
   <nav class="nav-bar">
     <div class="nav-content">
       <h1 class="nav-logo">Aeroflow.ia</h1>
@@ -56,7 +59,8 @@
       </div>
     </div>
 
-    <button id="removeBackground" class="process-button" disabled>🪄 Remover Fondo</button>
+    <div id="processingIndicator" class="processing-indicator"></div>
+    <div id="processingText" class="processing-text">Procesando imagen...</div>
     <button id="downloadButton" class="download-button" disabled>⬇️ Descargar Imagen</button>
   </div>
 

@@ -1,9 +1,15 @@
 document.addEventListener('DOMContentLoaded', function() {
+  // Hide loading screen after animations complete
+  setTimeout(() => {
+    document.querySelector('.loading-screen').style.display = 'none';
+  }, 3000);
+
   const imageInput = document.getElementById('imageInput');
   const originalImage = document.getElementById('originalImage');
   const processedImage = document.getElementById('processedImage');
-  const removeBackgroundBtn = document.getElementById('removeBackground');
   const downloadButton = document.getElementById('downloadButton');
+  const processingIndicator = document.getElementById('processingIndicator');
+  const processingText = document.getElementById('processingText');
   const imageBoxes = document.querySelectorAll('.image-box');
   
   const API_KEY = 'cLoFoEa3jQbvkNhNB5itfjm2';
@@ -27,32 +33,14 @@ document.addEventListener('DOMContentLoaded', function() {
     });
   });
 
-  imageInput.addEventListener('change', function(e) {
-    const file = e.target.files[0];
-    if (file) {
-      const reader = new FileReader();
-      reader.onload = function(event) {
-        originalImageData = event.target.result;
-        originalImage.src = originalImageData;
-        originalImage.classList.add('success-animation');
-        removeBackgroundBtn.disabled = false;
-        downloadButton.disabled = true;
-        processedImage.src = 'placeholder.svg';
-      };
-      reader.readAsDataURL(file);
-    }
-  });
-
-  removeBackgroundBtn.addEventListener('click', async function() {
-    if (!originalImageData) return;
-
+  async function processImage(imageData) {
     try {
-      removeBackgroundBtn.disabled = true;
-      removeBackgroundBtn.classList.add('loading');
-      removeBackgroundBtn.textContent = 'Procesando...';
+      processingIndicator.style.display = 'block';
+      processingText.style.display = 'block';
+      downloadButton.disabled = true;
 
       const formData = new FormData();
-      const blob = await fetch(originalImageData).then(r => r.blob());
+      const blob = await fetch(imageData).then(r => r.blob());
       formData.append('image_file', blob);
       formData.append('size', 'auto');
       formData.append('format', 'png');
@@ -79,9 +67,26 @@ document.addEventListener('DOMContentLoaded', function() {
       console.error('Error:', error);
       alert('Hubo un error al procesar la imagen: ' + error.message);
     } finally {
-      removeBackgroundBtn.disabled = false;
-      removeBackgroundBtn.classList.remove('loading');
-      removeBackgroundBtn.textContent = 'Remover Fondo';
+      processingIndicator.style.display = 'none';
+      processingText.style.display = 'none';
+    }
+  }
+
+  imageInput.addEventListener('change', function(e) {
+    const file = e.target.files[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onload = function(event) {
+        originalImageData = event.target.result;
+        originalImage.src = originalImageData;
+        originalImage.classList.add('success-animation');
+        downloadButton.disabled = true;
+        processedImage.src = 'placeholder.svg';
+        
+        // Automatically start processing
+        processImage(originalImageData);
+      };
+      reader.readAsDataURL(file);
     }
   });
 
