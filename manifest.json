@@ -1,0 +1,17 @@
+{
+  "name": "Aeroflow.ia - Eliminador de Fondo",
+  "short_name": "Aeroflow.ia",
+  "description": "Elimina el fondo de tus imágenes de forma fácil y rápida",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#f6f8ff",
+  "theme_color": "#4facfe",
+  "icons": [
+    {
+      "src": "data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'><rect width='512' height='512' fill='%234facfe'/><text x='50%' y='50%' text-anchor='middle' dy='.3em' fill='white' font-size='280' font-family='Arial'>A</text></svg>",
+      "sizes": "512x512",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}
